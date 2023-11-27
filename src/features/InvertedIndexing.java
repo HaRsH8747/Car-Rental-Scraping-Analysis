@@ -1,226 +1,183 @@
 package features;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
+import java.io.BufferedReader;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
-public class InvertedIndexing<Value> {
-    private static int N; // size of B-tree
-    private static int M = 5; // B-tree order
-    private BTreeNode rt; // root node
-    private static boolean is_exit;
-    private static int maximum = 0;
-    private static ArrayList<Hashtable<Integer, Integer>> arr = new ArrayList<>();
-    private static int document_index;
-    private static Hashtable<Integer, String> webpage_list = new Hashtable<>();
+class BTreeNode {
+    List<String> keys;
+    List<Map<String, Integer>> values;
+    List<BTreeNode> children;
 
-    // Defining the Structure of BTreeNode
-    private class BTreeNode {
-        private List<String> keys;
-        private List<Value> values;
-        private List<BTreeNode> children;
+    BTreeNode() {
+        keys = new ArrayList<>();
+        values = new ArrayList<>();
+        children = new ArrayList<>();
+    }
+}
 
-        BTreeNode() {
-            this.keys = new ArrayList<>();
-            this.values = new ArrayList<>();
-            this.children = new ArrayList<>();
-        }
+class BTree {
+    private int t;
+    private BTreeNode root;
+
+    BTree(int t) {
+        this.t = t;
+        this.root = new BTreeNode();
     }
 
-    public int size() {
-        return N;
-    }
-
-    // Validating that String is there or not
-    public boolean contains(String k) {
-        return get(k) != null;
-    }
-
-    private Value get(String k) {
-        if (k == null)
-            throw new NullPointerException();
-
-        if (k.length() == 0)
-            throw new IllegalArgumentException("Word must have be greater than one letter");
-
-        return get(rt, k);
-    }
-
-    private Value get(BTreeNode x, String k) {
-        if (x == null)
-            return null;
-
-        int i = 0;
-        while (i < x.keys.size() && k.compareTo(x.keys.get(i)) > 0) {
-            i++;
-        }
-
-        if (i < x.keys.size() && k.equals(x.keys.get(i))) {
-            return x.values.get(i);
-        } else if (x.children.size() > i) {
-            return get(x.children.get(i), k);
+    public void insert(String key, String document, int frequency) {
+        BTreeNode root = this.root;
+        if (root.keys.size() == (2 * t) - 1) {
+            BTreeNode newRoot = new BTreeNode();
+            this.root = newRoot;
+            newRoot.children.add(root);
+            splitChild(newRoot, 0);
+            insertNonFull(newRoot, key, document, frequency);
         } else {
-            return null;
+            insertNonFull(root, key, document, frequency);
         }
     }
 
-    // Inserting string and its value
-    public int put(String c, Value value) {
-        if (!contains(c)) {
-            N++;
-            rt = put(rt, c, value);
-            return 0;
-        } else
-            return 1;
+    private void insertNonFull(BTreeNode x, String key, String document, int frequency) {
+        int i = x.keys.size() - 1;
+
+        if (x.children.isEmpty()) {
+            while (i >= 0 && key.compareTo(x.keys.get(i)) < 0) {
+                i--;
+            }
+            i++;
+            x.keys.add(i, key);
+            x.values.add(i, new HashMap<>(Collections.singletonMap(document, frequency)));
+        } else {
+            while (i >= 0 && key.compareTo(x.keys.get(i)) < 0) {
+                i--;
+            }
+            i++;
+
+            if (x.children.get(i).keys.size() == (2 * t) - 1) {
+                splitChild(x, i);
+                if (key.compareTo(x.keys.get(i)) > 0) {
+                    i++;
+                }
+            }
+
+            insertNonFull(x.children.get(i), key, document, frequency);
+        }
     }
 
-    private BTreeNode put(BTreeNode x, String key, Value value) {
-        if (x == null) {
-            BTreeNode newNode = new BTreeNode();
-            newNode.keys.add(key);
-            newNode.values.add(value);
-            return newNode;
-        }
+    private void splitChild(BTreeNode x, int i) {
+        BTreeNode y = x.children.get(i);
+        BTreeNode z = new BTreeNode();
+        x.children.add(i + 1, z);
+        x.keys.add(i, y.keys.get(t - 1));
+        x.values.add(i, y.values.get(t - 1));
 
+        z.keys.addAll(y.keys.subList(t, y.keys.size()));
+        z.values.addAll(y.values.subList(t, y.values.size()));
+        y.keys.subList(t - 1, y.keys.size()).clear();
+        y.values.subList(t - 1, y.values.size()).clear();
+
+        if (!y.children.isEmpty()) {
+            z.children.addAll(y.children.subList(t, y.children.size()));
+            y.children.subList(t, y.children.size()).clear();
+        }
+    }
+
+    public Map<String, Integer> search(String key) {
+        return search(root, key);
+    }
+
+    private Map<String, Integer> search(BTreeNode x, String key) {
         int i = 0;
         while (i < x.keys.size() && key.compareTo(x.keys.get(i)) > 0) {
             i++;
         }
 
         if (i < x.keys.size() && key.equals(x.keys.get(i))) {
-            x.values.set(i, value);
-        } else if (x.children.size() > i) {
-            BTreeNode child = x.children.get(i);
-            BTreeNode newChild = put(child, key, value);
-            if (newChild != child) {
-                x.keys.add(i, newChild.keys.get(0));
-                x.values.add(i, newChild.values.get(0));
-                x.children.add(i + 1, newChild.children.get(0));
-                if (x.keys.size() > M - 1) {
-                    return split(x);
-                }
-            }
+            return x.values.get(i);
+        } else if (x.children.isEmpty()) {
+            return null;
         } else {
-            x.keys.add(i, key);
-            x.values.add(i, value);
-        }
-
-        return x;
-    }
-
-    private BTreeNode split(BTreeNode x) {
-        BTreeNode newNode = new BTreeNode();
-        int middle = x.keys.size() / 2;
-
-        newNode.keys.add(x.keys.remove(middle));
-        newNode.values.add(x.values.remove(middle));
-
-        List<String> rightKeys = new ArrayList<>(x.keys.subList(middle, x.keys.size()));
-        x.keys.subList(middle, x.keys.size()).clear();
-        newNode.keys.addAll(rightKeys);
-
-        List<Value> rightValues = new ArrayList<>(x.values.subList(middle, x.values.size()));
-        x.values.subList(middle, x.values.size()).clear();
-        newNode.values.addAll(rightValues);
-
-        List<BTreeNode> rightChildren = new ArrayList<>(x.children.subList(middle + 1, x.children.size()));
-        x.children.subList(middle + 1, x.children.size()).clear();
-        newNode.children.addAll(rightChildren);
-
-        return newNode;
-    }
-
-    // Other methods for tokenizing, printing frequency, etc. remain the same...
-
-    // Add your tokenizing, printing frequency, and indexing methods here...
-
-    // Other methods for tokenizing, printing frequency, etc. remain the same...
-
-    // Tokenize input documents and build the inverted index
-    private void tokenizeAndBuildIndex(InvertedIndexing<Integer> st) {
-        String folderList[] = {"AvisHtml", "BudgetHtml"};
-        document_index = -1;
-
-        for (String folder : folderList) {
-            // Assuming each document is a separate file in the folder
-            File webPageFolder = new File(folder);
-
-            for (File input : webPageFolder.listFiles()) {
-                String text = "";
-
-                if (!input.isHidden()) {
-                    try {
-                        document_index++;
-                        webpage_list.put(document_index, input.getName());
-                        Document document = Jsoup.parse(input, "UTF-8");
-                        text = text + document.body().text();
-                    } catch (Exception e) {
-                        continue;
-                    }
-
-                    text = text.toLowerCase();
-                    String[] words = text.split(" ");
-
-                    for (String word : words) {
-                        if (st.get(word) == null) {
-                            arr.add(new Hashtable<Integer, Integer>());
-                            st.put(word, N);
-                        }
-
-                        int wordIndex = st.get(word);
-
-                        try {
-                            if (wordIndex <= arr.size()) {
-                                int freq = arr.get(wordIndex).get(document_index);
-                                arr.get(wordIndex).put(document_index, freq + 1);
-                            }
-                        } catch (Exception e) {
-                            try {
-                                arr.get(wordIndex).put(document_index, 1);
-                            } catch (Exception e2) {
-                                System.out.println(e2);
-                            }
-                        }
-                    }
-
-                    if (words.length > maximum) {
-                        maximum = words.length;
-                    }
-                }
-            }
+            return search(x.children.get(i), key);
         }
     }
+}
 
-    // Print frequency for a given word index
-    public static void printFrequency(int wordIndex) {
-        for (int i = 0; i <= document_index; i++) {
-            String filename = webpage_list.get(i);
-            int frequency = arr.get(wordIndex).get(i) == null ? 0 : arr.get(wordIndex).get(i);
-            if (frequency > 0) {
-                System.out.println(filename + "\t: " + frequency);
-            }
-        }
-    }
-
-    // Indexing method
-    public static void Indexing(Hashtable<String, String> url_Map, String product) {
-        InvertedIndexing<Integer> st = new InvertedIndexing<Integer>();
-        st.tokenizeAndBuildIndex(st);
-
-        int index = st.get(product);
-        if (index != -1) {
-            printFrequency(index);
-        } else {
-            System.out.println("Word not found in the index.");
-        }
-        System.out.println();
-    }
-
+public class InvertedIndexing {
     public static void main(String[] args) {
+        // Create a B-tree with a node size of 2
+        BTree bTree = new BTree(2);
 
+        // Indexing documents
+        indexDocument(bTree, "document1.html", "This is an example document with the keyword example.");
+        indexDocument(bTree, "document2.html", "Another document containing the keyword example multiple times.");
+
+        // Search for a keyword
+        String keyword = "example";
+        Map<String, Integer> result = bTree.search(keyword);
+
+        // Display search result
+        if (result != null) {
+            System.out.println("Occurrences of '" + keyword + "': " + result);
+        } else {
+            System.out.println("No occurrences of '" + keyword + "'.");
+        }
+    }
+
+    private static String readHtmlFile(File file) {
+        StringBuilder content = new StringBuilder();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return content.toString();
+    }
+
+    public static BTree indexDocumentsInFolder(String[] folderPaths) {
+        BTree bTree = new BTree(2);
+        for (String folderPath : folderPaths) {
+            File folder = new File(folderPath);
+            if (folder.exists() && folder.isDirectory()) {
+                File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".html"));
+
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile()) {
+                            String documentName = file.getName();
+                            String content = readHtmlFile(file);
+                            indexDocument(bTree, documentName, content);
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Invalid folder path: " + folderPath);
+            }
+        }
+        return bTree;
+    }
+
+    private static void indexDocument(BTree bTree, String documentName, String content) {
+        // Tokenize the content (replace with your own tokenization logic)
+        String[] tokens = content.split("\\s+");
+
+        for (String token : tokens) {
+            // Update the B-tree
+            Map<String, Integer> frequencies = bTree.search(token.toLowerCase());
+            if (frequencies == null) {
+                frequencies = new HashMap<>();
+            }
+
+            int currentFrequency = frequencies.getOrDefault(documentName, 0);
+            frequencies.put(documentName, currentFrequency + 1);
+            bTree.insert(token.toLowerCase(), documentName, currentFrequency + 1);
+        }
     }
 }

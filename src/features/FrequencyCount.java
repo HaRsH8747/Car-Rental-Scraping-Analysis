@@ -54,7 +54,6 @@ public class FrequencyCount {
         while (elements.hasNext()) {
             JsonNode element = elements.next();
             String name = element.get("name").asText();
-
             frequencyMap.put(name, frequencyMap.getOrDefault(name, 0) + 1);
         }
 

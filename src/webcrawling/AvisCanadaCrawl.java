@@ -97,10 +97,10 @@ public class AvisCanadaCrawl {
                     if (findSuggestion) {
                         locName = div.findElements(By.tagName("span")).stream().map(WebElement::getText).collect(Collectors.joining());
                     }
-                    if (locName.toLowerCase().contains("canada")) {
-                        divList.add(locName);
-                        locationElementMap.put(locName, div);
-                    }
+                    divList.add(locName);
+                    locationElementMap.put(locName, div);
+//                    if (locName.toLowerCase().contains("canada")) {
+//                    }
                 }
                 if (childElements.get(childElements.size()-1) == childElement) {
                     findSuggestion = false;
@@ -261,7 +261,7 @@ public class AvisCanadaCrawl {
         }
 
 //        url_Map.putAll(WebCrawler.createFile(avisUrl, content, userPickupLoc+"_"+fileCounter+"_avis_car_deals", "AvisFiles/"));
-        url_Map.putAll(WebCrawler.createFile(avisUrl, content, avisUrl, "AvisFiles/"));
+        WebCrawler.createFile(avisUrl, content, "avis_deals", "AvisFiles/");
 //        url_Map.putAll(WebCrawler.createFile(budgetUrl, content, fileName, folderName));
 
         System.out.println("Data extracted and saved...");
@@ -309,5 +309,9 @@ public class AvisCanadaCrawl {
         // Select the option by its value
         selectDropOffTime.selectByValue(formattedDropOffTime);
 
+    }
+
+    public static void closeDriver() {
+        driver.quit();
     }
 }

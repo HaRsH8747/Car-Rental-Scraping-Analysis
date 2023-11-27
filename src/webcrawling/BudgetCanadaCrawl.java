@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class BudgetCanadaCrawl {
 
-    private static String avisUrl = "https://www.budget.ca/en/home";
+    private static String budgetUrl = "https://www.budget.ca/en/home";
 
     private static Hashtable<String, String> url_Map = new Hashtable<String, String>();
 
@@ -48,19 +48,19 @@ public class BudgetCanadaCrawl {
 //        chromeOptions.addArguments("--headless");
         driver = new ChromeDriver(chromeOptions);
         wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        driver.get(avisUrl);
+        driver.get(budgetUrl);
     }
 
     public static String userPickupLoc = "";
 
-    public static void resolveLocation(String pickupLocation, String picLoc_dropdown, String suggestionBox) {
+    public static String resolveLocation(String pickupLocation, String picLoc_dropdown, String suggestionBox) {
         checkForPopUp();
         userPickupLoc = pickupLocation;
         WebElement inputPickUpField = driver.findElement(By.id(picLoc_dropdown));
         inputPickUpField.clear();
         inputPickUpField.sendKeys(pickupLocation);
 
-//        return fetchPickupLocations(driver, suggestionBox);
+        return fetchPickupLocations(driver, suggestionBox);
     }
 
     static boolean findSuggestion = false;
@@ -97,10 +97,10 @@ public class BudgetCanadaCrawl {
                     if (findSuggestion) {
                         locName = div.findElements(By.tagName("span")).stream().map(WebElement::getText).collect(Collectors.joining());
                     }
-                    if (locName.toLowerCase().contains("canada")) {
-                        divList.add(locName);
-                        locationElementMap.put(locName, div);
-                    }
+                    divList.add(locName);
+                    locationElementMap.put(locName, div);
+//                    if (locName.toLowerCase().contains("canada")) {
+//                    }
                 }
                 if (childElements.get(childElements.size()-1) == childElement) {
                     findSuggestion = false;
@@ -135,11 +135,11 @@ public class BudgetCanadaCrawl {
         List<String> combinedList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : suggestionMap.entrySet()) {
             if (!entry.getValue().isEmpty()) {
-                System.out.println("\nKey: " + entry.getKey());
+//                System.out.println("\nKey: " + entry.getKey());
                 combinedList.addAll(entry.getValue());
                 // Iterate and print elements using the iterator
                 for (String element : entry.getValue()) {
-                    System.out.println(index + ". " + element);
+//                    System.out.println(index + ". " + element);
                     index++;
                 }
             }
@@ -147,9 +147,10 @@ public class BudgetCanadaCrawl {
 
         int selectedIndex;
         do {
-            System.out.println("\nPlease select any one locations from the suggested pickup locations above: ");
+//            System.out.println("\nPlease select any one locations from the suggested pickup locations above: ");
             Scanner locationSelection = new Scanner(System.in);
-            selectedIndex = locationSelection.nextInt();
+//            selectedIndex = locationSelection.nextInt();
+            selectedIndex = 1;
         } while (selectedIndex > combinedList.size());
 //        System.out.println(combinedList.get(selectedIndex-1));
 //        inputField.clear();
@@ -256,7 +257,7 @@ public class BudgetCanadaCrawl {
         }
 
 //        url_Map.putAll(WebCrawler.createFile(avisUrl, content, userPickupLoc+"_"+fileCounter+"_avis_car_deals", "AvisFiles/"));
-        url_Map.putAll(WebCrawler.createFile(avisUrl, content, avisUrl, "AvisFiles/"));
+        url_Map.putAll(WebCrawler.createFile(budgetUrl, content, "budget_deals", "BudgetFiles/"));
 //        url_Map.putAll(WebCrawler.createFile(budgetUrl, content, fileName, folderName));
 
         System.out.println("Data extracted and saved...");
@@ -269,7 +270,7 @@ public class BudgetCanadaCrawl {
             WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("warning-msg-err")));
             if (element.isDisplayed()) {
                 System.out.println(element.getText());
-                driver.get(avisUrl);
+                driver.get(budgetUrl);
                 return true;
             }
         } catch (Exception ex) {
@@ -304,5 +305,9 @@ public class BudgetCanadaCrawl {
         // Select the option by its value
         selectDropOffTime.selectByValue(formattedDropOffTime);
 
+    }
+
+    public static void closeDriver() {
+        driver.quit();
     }
 }
