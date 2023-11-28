@@ -311,6 +311,10 @@ public class AvisCanadaCrawl {
 
     }
 
+    public static void resetDriver(){
+        driver.get(avisUrl);
+    }
+
     public static void closeDriver() {
         driver.quit();
     }

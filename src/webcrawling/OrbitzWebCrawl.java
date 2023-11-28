@@ -242,7 +242,7 @@ public class OrbitzWebCrawl {
         List<WebElement> locationItems = locationResults.findElements(By.cssSelector("li[data-stid='location-field-locn-result-item']"));
         int a = 1;
         // Loop through each list item and extract the location suggestion
-        System.out.println("Location Suggestions:");
+//        System.out.println("Location Suggestions:");
         for (WebElement locationItem : locationItems) {
             // Find the button element within each list item
             WebElement buttonElement = locationItem.findElement(By.cssSelector("button[data-stid='location-field-locn-result-item-button']"));
@@ -274,12 +274,12 @@ public class OrbitzWebCrawl {
         driver.manage().window().maximize();
         wait.until(drive -> ((JavascriptExecutor) drive).executeScript("return document.readyState").equals("complete"));
 
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"Rental-cars-transportation\"]/div[1]/div/div/div/div/div/div[2]/div[1]/button"))).click();
-        WebElement inputField = driver.findElement(By.xpath("//*[@id=\"location-field-loc2-container\"]"));
-        inputField.sendKeys(dropOffLoc);
-        driver.navigate().refresh();
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"Rental-cars-transportation\"]/div[1]/div/div/div/div/div/div[2]/div[1]/button"))).click();
-        WebElement inputField1 = driver.findElement(By.xpath("//*[@id=\"location-field-loc2-container\"]"));
+//        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"Rental-cars-transportation\"]/div[1]/div[2]/div/div/div/div/div[2]/div[1]/button"))).click();
+//        WebElement inputField = driver.findElement(By.xpath("//*[@id=\"location-field-loc2\"]"));
+//        inputField.sendKeys(dropOffLoc);
+//        driver.navigate().refresh();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"Rental-cars-transportation\"]/div[1]/div[2]/div/div/div/div/div[2]/div[1]/button"))).click();
+        WebElement inputField1 = driver.findElement(By.xpath("//*[@id=\"location-field-loc2\"]"));
         inputField1.sendKeys(dropOffLoc);
 
         try {
@@ -288,16 +288,16 @@ public class OrbitzWebCrawl {
             throw new RuntimeException(e);
         }
 
-        WebElement locationResults = driver.findElement(By.cssSelector("ul[data-stid='location-field-locn-results']"));
+        WebElement locationResults = driver.findElement(By.cssSelector("ul[data-stid='location-field-loc2-results']"));
 
         // Find all list items containing location suggestions within the parent element
-        List<WebElement> locationItems = locationResults.findElements(By.cssSelector("li[data-stid='location-field-locn-result-item']"));
+        List<WebElement> locationItems = locationResults.findElements(By.cssSelector("li[data-stid='location-field-loc2-result-item']"));
         int a = 1;
         // Loop through each list item and extract the location suggestion
-        System.out.println("Location Suggestions:");
+//        System.out.println("Location Suggestions:");
         for (WebElement locationItem : locationItems) {
             // Find the button element within each list item
-            WebElement buttonElement = locationItem.findElement(By.cssSelector("button[data-stid='location-field-locn-result-item-button']"));
+            WebElement buttonElement = locationItem.findElement(By.cssSelector("button[data-stid='location-field-loc2-result-item-button']"));
 
             // Get the aria-label attribute containing the location suggestion
             String locationSuggestion = buttonElement.getAttribute("aria-label");
@@ -309,7 +309,7 @@ public class OrbitzWebCrawl {
         Scanner scanner = new Scanner(System.in);
 //        System.out.println("Select your location: ");
         String userInput = "1";
-        List<WebElement> buttons = driver.findElements(By.cssSelector("ul[data-stid='location-field-locn-results'] button[data-stid='location-field-locn-result-item-button']"));
+        List<WebElement> buttons = driver.findElements(By.cssSelector("ul[data-stid='location-field-loc2-results'] button[data-stid='location-field-loc2-result-item-button']"));
 
         int indexToClick = Integer.parseInt(userInput); // Change the index based on your requirement (0-based index)
 
@@ -355,6 +355,10 @@ public class OrbitzWebCrawl {
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         };
         return months[monthNumber - 1];
+    }
+
+    public static void resetDriver(){
+        driver.get(orbitzUrl);
     }
 
     public static void closeDriver(){

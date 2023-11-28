@@ -376,6 +376,7 @@ public class ByteBuds {
         OrbitzWebCrawl.initDriver();
 
         Scanner scanner = new Scanner(System.in);
+        String response;
         do {
             // Ask if pickup and drop-off locations are the same
             System.out.print("Are pickup and drop-off locations the same? (yes/no): ");
@@ -409,7 +410,6 @@ public class ByteBuds {
                 System.out.print("Enter pickup date (DD/MM/YYYY): ");
                 pickupDate = scanner.nextLine();
             } while (!DataValidation.validateDate(pickupDate));
-            pickupDate = convertDateFormat(pickupDate);
 
             // Get drop-off date
             String returnDate;
@@ -417,11 +417,14 @@ public class ByteBuds {
                 System.out.print("Enter return date (DD/MM/YYYY): ");
                 returnDate = scanner.nextLine();
             } while (!DataValidation.validateDate(returnDate));
+
+            OrbitzWebCrawl.resolveDate(pickupDate, returnDate);
+
+            pickupDate = convertDateFormat(pickupDate);
             returnDate = convertDateFormat(returnDate);
 
             AvisCanadaCrawl.resolveDate(pickupDate, returnDate);
             BudgetCanadaCrawl.resolveDate(pickupDate, returnDate);
-            OrbitzWebCrawl.resolveDate(pickupDate, returnDate);
 
 //            System.out.println("Do you have a specific time in mind to pick and return the car: ");
 
@@ -454,7 +457,13 @@ public class ByteBuds {
 
             // Ask if the user wants to continue
             System.out.print("Do you want to continue? (yes/no): ");
-        } while (scanner.nextLine().equalsIgnoreCase("yes"));
+            response = scanner.nextLine();
+            if (response.equalsIgnoreCase("yes")){
+                AvisCanadaCrawl.resetDriver();
+                BudgetCanadaCrawl.resetDriver();
+                OrbitzWebCrawl.resetDriver();
+            }
+        } while (response.equalsIgnoreCase("yes"));
 
         AvisCanadaCrawl.closeDriver();
         BudgetCanadaCrawl.closeDriver();

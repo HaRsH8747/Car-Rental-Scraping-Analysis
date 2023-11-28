@@ -307,6 +307,10 @@ public class BudgetCanadaCrawl {
 
     }
 
+    public static void resetDriver(){
+        driver.get(budgetUrl);
+    }
+
     public static void closeDriver() {
         driver.quit();
     }
