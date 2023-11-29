@@ -36,10 +36,9 @@ public class PageRanking {
     }
 
     public static void main(String[] args) {
-
         BTree bTree = InvertedIndexing.indexDocumentsInFolder(new String[]{"AvisFiles","BudgetFiles","OrbitzFiles"});
 
-        Map<String, Integer> documentFrequencies = bTree.search("ford");
+        Map<String, Integer> documentFrequencies = bTree.search("kia");
 
         // Create a PageRank object
         PageRanking pageRank = new PageRanking();
@@ -72,4 +71,3 @@ public class PageRanking {
         }
     }
 }
-

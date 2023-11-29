@@ -12,7 +12,7 @@ public class DataValidation {
 
     public static boolean validateCarName(String carName) {
         boolean check = CAR_NAME_PATTERN.matcher(carName).matches();
-        if (!check){
+        if (!check) {
             System.out.println("Invalid car name!!! Please use valid characters and spaces. Sorry... try again.");
         }
         return check;
@@ -20,7 +20,7 @@ public class DataValidation {
 
     public static boolean validateDate(String date) {
         boolean check = DATE_PATTERN.matcher(date).matches();
-        if (!check){
+        if (!check) {
             System.out.println("Invalid date format. Please use DD/MM/YYYY. Please try again.");
         }
         return check;
@@ -28,7 +28,7 @@ public class DataValidation {
 
     public static boolean validateTime(String time) {
         boolean check = TIME_PATTERN.matcher(time).matches();
-        if (!check){
+        if (!check) {
             System.out.println("Invalid time format. Please use HH:MM. Please try again.");
         }
         return check;
@@ -36,7 +36,7 @@ public class DataValidation {
 
     public static boolean validateCityName(String cityName) {
         boolean check = CITY_NAME_PATTERN.matcher(cityName).matches();
-        if (!check){
+        if (!check) {
             System.out.println("Invalid city name. Please use alphabetical characters and spaces. Sorry ...Try again.");
         }
         return check;
@@ -84,5 +84,15 @@ public class DataValidation {
 
         scanner.close();
     }
+
+    public static boolean validateUserResponse(String input) {
+        if (input.length() == 1 && (input.charAt(0) == 'y' || input.charAt(0) == 'n')) {
+            return true;
+        } else {
+            System.out.print("Invalid input. Please enter 'y' or 'n'\n");
+            return false;
+        }
+    }
+
 }
 

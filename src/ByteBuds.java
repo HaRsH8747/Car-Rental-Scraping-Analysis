@@ -1,5 +1,6 @@
 import features.*;
-import htmlparser.CarRentalParser;
+import htmlparser.AvisBudgetParser;
+import htmlparser.OrbitzParser;
 import model.CarInfo;
 import webcrawling.AvisCanadaCrawl;
 import webcrawling.BudgetCanadaCrawl;
@@ -117,11 +118,11 @@ public class ByteBuds {
         // Check if there are HTML files in the specified folders (AvisFiles, BudgetFiles, OrbitzFiles)
         // You can implement the logic to check for files and return true if files are present, false otherwise.
         // For example:
-         if (filesExistInAvis() || filesExistInBudget() || filesExistInOrbitz()) {
+        if (filesExistInAvis() || filesExistInBudget() || filesExistInOrbitz()) {
             return true;
-         } else {
+        } else {
             return false;
-         }
+        }
         // Placeholder, replace with actual logic
     }
 
@@ -134,11 +135,15 @@ public class ByteBuds {
         System.out.println("*            CAR DEALS FILTER MENU                *");
         System.out.println("**************************************************");
 
-        System.out.println("Do you want to refine your selection? (yes/no): ");
-        String refineSelection = scanner.next().toLowerCase();
+        String refineSelection;
+
+        do {
+            System.out.println("Do you want to refine your selection? (y/n): ");
+            refineSelection = scanner.next().toLowerCase();
+        } while (!DataValidation.validateUserResponse(refineSelection));
 
         List<CarInfo> processFilter = new ArrayList<>();
-        while (refineSelection.equals("yes")) {
+        while (refineSelection.equals("y")) {
 //            processFilter.addAll(carInfoList);
 //            processFilter.sort(Comparator.comparingDouble(CarInfo::getPrice));
             System.out.println("\nSelect option to refine:\n1. Display Best Deals\n2. Car Name\n3. Car Price\n4. Transmission Type\n5. Passenger Capacity\n6. Luggage Capacity\n7. Show Car Analysis\n8. Exit");
@@ -173,9 +178,12 @@ public class ByteBuds {
                     processFilter = filterByCarName(carInfoList, preferredCarName);
                     displayCarList(processFilter);
 
-                    System.out.println("Do you want to see Page Rank of websites for the given Car Model (Y/N): ");
-                    Scanner scanner1 = new Scanner(System.in);
-                    String s = scanner1.nextLine();
+                    String s;
+                    do {
+                        System.out.println("Do you want to see Page Rank of websites for the given Car Model (Y/N): ");
+                        s = scanner.next();
+                    } while (!DataValidation.validateUserResponse(s));
+
                     if (s.equalsIgnoreCase("y")) {
                         try {
                             PageRanking.showRanking(preferredCarName);
@@ -190,7 +198,6 @@ public class ByteBuds {
                     String preferredPriceRange = scanner.next().toLowerCase();
                     processFilter = filterByPriceRange(carInfoList, preferredPriceRange);
                     displayCarList(processFilter);
-
                     break;
                 case 4:
                     System.out.println("Enter preferred transmission type (A or M): ");
@@ -353,23 +360,26 @@ public class ByteBuds {
 
     private static void displayCarList(List<CarInfo> carInfoList) {
         // Display table header with borders
-        System.out.println("+-------------------------+----------------------------------------+----------------------+------------------------+------------------------+--------------------------+");
-        System.out.println("|      Car Group          |          Car Model                     |    Counter Price     |   Passenger Capacity   |    Luggage Capacity    |     Transmission Type    |");
-        System.out.println("+-------------------------+----------------------------------------+----------------------+------------------------+------------------------+--------------------------+");
+        System.out.println("+-------------------------+----------------------------------------+----------------------+------------------------+------------------------+--------------------------+-----------------------+");
+        System.out.println("|      Car Group          |          Car Model                     |    Counter Price     |   Passenger Capacity   |    Luggage Capacity    |     Transmission Type    |     Rental Company    |");
+        System.out.println("+-------------------------+----------------------------------------+----------------------+------------------------+------------------------+--------------------------+-----------------------+");
 
         // Display table rows with borders
         for (CarInfo carInfo : carInfoList) {
-            System.out.printf("| %-23s | %-38s | %-20s | %-22s | %-22s | %-24s |\n",
+            System.out.printf("| %-23s | %-38s | %-20s | %-22s | %-22s | %-24s | %-21s |\n",
                     carInfo.getCarGroup(), carInfo.getName(), carInfo.getPrice(),
-                    carInfo.getPassengerCapacity(), carInfo.getLargeBag() + carInfo.getSmallBag(), carInfo.getTransmissionType());
+                    carInfo.getPassengerCapacity(), carInfo.getLargeBag() + carInfo.getSmallBag(), carInfo.getTransmissionType(), carInfo.getRentalCompany());
         }
 
         // Display table footer with borders
-        System.out.println("+-------------------------+----------------------------------------+----------------------+------------------------+------------------------+--------------------------+");
+        System.out.println("+-------------------------+----------------------------------------+----------------------+------------------------+------------------------+--------------------------+-----------------------+");
     }
 
     private static List<CarInfo> performParsing() {
-        return CarRentalParser.parseFiles();
+        List<CarInfo> combined = new ArrayList<>();
+        combined.addAll(AvisBudgetParser.parseFiles());
+//        combined.addAll(OrbitzParser.fetchAllOrbitzDeals());
+        return combined;
     }
 
     private static void performCrawling() {
@@ -381,8 +391,11 @@ public class ByteBuds {
         String response;
         do {
             // Ask if pickup and drop-off locations are the same
-            System.out.print("Are pickup and drop-off locations the same? (yes/no): ");
-            String sameLocationResponse = scanner.nextLine().toLowerCase();
+            String sameLocationResponse;
+            do {
+                System.out.print("Are pickup and drop-off locations the same? (y/n): ");
+                sameLocationResponse = scanner.nextLine().toLowerCase();
+            } while (!DataValidation.validateUserResponse(sameLocationResponse));
 
             // Get pickup location
             String pickupLocation;
@@ -399,7 +412,7 @@ public class ByteBuds {
 //             Get drop-off location if locations are different
             String dropOffLocation;
             do {
-                dropOffLocation = sameLocationResponse.equals("no") ? getDropOffLocation(scanner) : pickupLocation;
+                dropOffLocation = sameLocationResponse.equals("n") ? getDropOffLocation(scanner) : pickupLocation;
             } while (!DataValidation.validateCityName(dropOffLocation));
 
             String finalSelectedDropOffLoc = AvisCanadaCrawl.resolveLocation(dropOffLocation, "DropLoc_value", "DropLoc_dropdown");
@@ -460,7 +473,7 @@ public class ByteBuds {
             // Ask if the user wants to continue
             System.out.print("Do you want to continue? (yes/no): ");
             response = scanner.nextLine();
-            if (response.equalsIgnoreCase("yes")){
+            if (response.equalsIgnoreCase("yes")) {
                 AvisCanadaCrawl.resetDriver();
                 BudgetCanadaCrawl.resetDriver();
                 OrbitzWebCrawl.resetDriver();

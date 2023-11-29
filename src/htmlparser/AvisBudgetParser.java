@@ -1,7 +1,6 @@
 package htmlparser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import features.*;
 import model.CarInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,9 +12,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-public class CarRentalParser {
+public class AvisBudgetParser {
 
     public static void main(String[] args) {
 
@@ -59,7 +57,7 @@ public class CarRentalParser {
     public static List<CarInfo> parseFiles() {
         List<CarInfo> combinedCarInfoList = new ArrayList<>();
 
-        String[] folderPaths = {"AvisFiles/", "BudgetFiles/", "OrbitzFiles/"};
+        String[] folderPaths = {"AvisFiles/", "BudgetFiles/"};
 
         for (String folderPath : folderPaths) {
             // Create a File object for the folder
@@ -74,6 +72,7 @@ public class CarRentalParser {
                     for (File file : files) {
 //                        System.out.println(file.getName());
                         combinedCarInfoList.addAll(parseCarRentalWebsite(file.getAbsolutePath()));
+                        combinedCarInfoList.addAll(OrbitzParser.fetchAllOrbitzDeals());
                     }
                 } else {
                     System.out.println("The folder is empty.");
@@ -89,6 +88,15 @@ public class CarRentalParser {
     private static List<CarInfo> parseCarRentalWebsite(String filePath) {
         List<CarInfo> carInfoList = new ArrayList<>();
 
+        String rentalCompany = "";
+        // Parse local HTML file
+        if (filePath.toLowerCase().contains("avis")) {
+            rentalCompany = "avis";
+        } else if (filePath.toLowerCase().contains("budget")) {
+            rentalCompany = "budget";
+        } else if (filePath.toLowerCase().contains("orbitz")) {
+            rentalCompany = "orbitz";
+        }
         try {
             // Parse local HTML file
             File input = new File(filePath);
@@ -101,7 +109,7 @@ public class CarRentalParser {
             for (Element carElement : carElements) {
 //                Element aElement = carElement.select("a.vehicleinfo");
 
-                String carName = carElement.select("p.featurecartxt.similar-car").text();
+                String carName = carElement.select("p.featurecartxt.similar-car").text().split(" or")[0];
                 if (carName.contains("Mystery Car")) {
                     continue;
                 }
@@ -114,8 +122,9 @@ public class CarRentalParser {
                 int largeBag = Integer.parseInt(fetchInt(carElement.select("span.four-bags-feat").first().text()));
                 int smallBag = Integer.parseInt(fetchInt(carElement.select("span.four-bags-feat-small").first().text()));
 
+
                 // Create a CarInfo object and add it to the list
-                CarInfo carInfo = new CarInfo(carName, carPrice, passengerCapacity, carGroup, transmissionType, largeBag, smallBag);
+                CarInfo carInfo = new CarInfo(carName, carPrice, passengerCapacity, carGroup, transmissionType, largeBag, smallBag, rentalCompany);
                 carInfoList.add(carInfo);
             }
 
@@ -151,6 +160,7 @@ public class CarRentalParser {
             // Create the file in the specified directory with the provided filename
             File file = new File(directory, filename + ".json");
 
+            System.out.println(carInfoList);
             // Write carInfoList to JSON file
             try {
                 objectMapper.writeValue(file, carInfoList);

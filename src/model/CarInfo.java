@@ -8,8 +8,9 @@ public class CarInfo {
     private String transmissionType;
     private int largeBag;
     private int smallBag;
+    private String rentalCompany;
 
-    public CarInfo(String name, double price, int passengerCapacity, String carGroup, String transmissionType, int largeBag, int smallBag) {
+    public CarInfo(String name, double price, int passengerCapacity, String carGroup, String transmissionType, int largeBag, int smallBag, String rentalCompany) {
         this.name = name;
         this.price = price;
         this.passengerCapacity = passengerCapacity;
@@ -17,6 +18,15 @@ public class CarInfo {
         this.transmissionType = transmissionType;
         this.largeBag = largeBag;
         this.smallBag = smallBag;
+        this.rentalCompany = rentalCompany;
+    }
+
+    public String getRentalCompany() {
+        return rentalCompany;
+    }
+
+    public void setRentalCompany(String rentalCompany) {
+        this.rentalCompany = rentalCompany;
     }
 
     public String getName() {

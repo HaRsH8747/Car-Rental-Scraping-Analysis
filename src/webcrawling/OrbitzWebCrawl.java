@@ -212,8 +212,13 @@ public class OrbitzWebCrawl {
         WebElement searchButton = driver.findElement(By.cssSelector("button[data-testid='submit-button']"));
         searchButton.click();
 
-        WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
+        try {
+            Thread.sleep(7);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+//        WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(10));
+//        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
 
         WebCrawler.createFile(orbitzUrl, driver.getPageSource(), "orbitz_deals", "OrbitzFiles/");
     }
