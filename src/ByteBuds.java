@@ -151,6 +151,9 @@ public class ByteBuds {
                     displayCarList(processFilter);
                     break;
                 case 2:
+                    System.out.println("The available Car Companies:");
+                    Set<String> carList = carInfoList.stream().map(ele -> ele.getName().split(" ")[0]).collect(Collectors.toSet());
+                    System.out.println(carList);
                     try {
                         SpellChecking.initializeDictionary("JsonData/filtered_car_deals.json");
                     } catch (IOException e) {
@@ -159,11 +162,11 @@ public class ByteBuds {
                     boolean check;
                     String preferredCarName;
                     do {
-                        System.out.println("Enter preferred Car Name: ");
+                        System.out.println("Enter your preferred Car Company from above given list: ");
                         preferredCarName = scanner.next().toLowerCase();
                         check = SpellChecking.checkSpelling(preferredCarName);
                         if (!check) {
-                            System.out.println("No such Car Model exists. Please try again...");
+                            System.out.println("No such Car exists. Please try again any other from the given list...");
                         }
                     } while (!check);
 
@@ -213,7 +216,6 @@ public class ByteBuds {
                     int preferredLuggageCapacity = scanner.nextInt();
                     processFilter = filterByLuggageCapacity(carInfoList, preferredLuggageCapacity);
                     displayCarList(processFilter);
-
                     break;
                 case 7:
                     fetchCarAnalysis(carInfoList);

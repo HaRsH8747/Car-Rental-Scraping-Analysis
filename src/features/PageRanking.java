@@ -2,21 +2,26 @@ package features;
 
 import java.util.*;
 
-class PageRank {
-    private Map<String, Integer> pageScores = new HashMap<>();
+public class PageRanking {
+    private Map<String, Integer> pageScores;
     private PriorityQueue<Map.Entry<String, Integer>> priorityQueue;
 
-    public PageRank() {
+    public PageRanking() {
+        pageScores = new HashMap<>();
         // Initialize priority queue with a comparator for sorting
         priorityQueue = new PriorityQueue<>(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()));
     }
 
     public void calculatePageRank(Map<String, Integer> documentFrequencies) {
-        // Simple ranking based on frequency (replace with more advanced ranking)
-        pageScores.putAll(documentFrequencies);
+        if (documentFrequencies != null) {
+            // Simple ranking based on frequency (replace with more advanced ranking)
+            pageScores.putAll(documentFrequencies);
 
-        // Populate the priority queue for ranking
-        priorityQueue.addAll(pageScores.entrySet());
+            // Populate the priority queue for ranking
+            priorityQueue.addAll(pageScores.entrySet());
+        } else {
+            System.out.println("Error: Document frequencies are null");
+        }
     }
 
     public List<Map.Entry<String, Integer>> getRankedPages() {
@@ -29,9 +34,7 @@ class PageRank {
 
         return rankedPages;
     }
-}
 
-public class PageRanking {
     public static void main(String[] args) {
 
         BTree bTree = InvertedIndexing.indexDocumentsInFolder(new String[]{"AvisFiles","BudgetFiles","OrbitzFiles"});
@@ -39,7 +42,7 @@ public class PageRanking {
         Map<String, Integer> documentFrequencies = bTree.search("ford");
 
         // Create a PageRank object
-        PageRank pageRank = new PageRank();
+        PageRanking pageRank = new PageRanking();
 
         // Calculate PageRank based on the document frequencies
         pageRank.calculatePageRank(documentFrequencies);
@@ -52,12 +55,12 @@ public class PageRanking {
     }
 
     public static void showRanking(String keyword){
-        BTree bTree = InvertedIndexing.indexDocumentsInFolder(new String[]{"AvisFiles","BudgetFiles"});
+        BTree bTree = InvertedIndexing.indexDocumentsInFolder(new String[]{"AvisFiles/","BudgetFiles/","OrbitzFiles/"});
 
         Map<String, Integer> documentFrequencies = bTree.search(keyword);
 
         // Create a PageRank object
-        PageRank pageRank = new PageRank();
+        PageRanking pageRank = new PageRanking();
 
         // Calculate PageRank based on the document frequencies
         pageRank.calculatePageRank(documentFrequencies);
