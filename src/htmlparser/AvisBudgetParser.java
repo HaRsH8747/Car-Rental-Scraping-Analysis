@@ -64,7 +64,7 @@ public class AvisBudgetParser {
                     for (File file : files) {
 //                        System.out.println(file.getName());
                         combinedCarInfoList.addAll(parseCarRentalWebsite(file.getAbsolutePath()));
-                        combinedCarInfoList.addAll(OrbitzParser.fetchAllOrbitzDeals());
+//                        combinedCarInfoList.addAll(OrbitzParser.fetchAllOrbitzDeals());
                     }
                 } else {
                     System.out.println("The folder is empty.");
@@ -73,7 +73,7 @@ public class AvisBudgetParser {
                 System.out.println("The specified path is not a directory.");
             }
         }
-        saveCarInfoToJson(combinedCarInfoList, "filtered_car_deals");
+//        saveCarInfoToJson(combinedCarInfoList, "filtered_car_deals");
         return combinedCarInfoList;
     }
 
@@ -86,8 +86,6 @@ public class AvisBudgetParser {
             rentalCompany = "avis";
         } else if (filePath.toLowerCase().contains("budget")) {
             rentalCompany = "budget";
-        } else if (filePath.toLowerCase().contains("orbitz")) {
-            rentalCompany = "orbitz";
         }
         try {
             // Parse local HTML file

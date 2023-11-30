@@ -15,18 +15,18 @@ import java.util.regex.Pattern;
 public class OrbitzParser {
 
     public static List<CarInfo> fetchAllOrbitzDeals(){
-        String website1Path = "H:\\_MAC Course\\Sem-1(Sep23-Dec23)\\ACC(Comp8547_01)\\Final Project\\orbitz_car_deals.html";
+        String website1Path = "OrbitzFiles/orbitz_deals.html";
         File folder = new File(website1Path);
-        if (folder.exists() && folder.isDirectory()) {
-            File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".html"));
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isFile()) {
-                        String documentName = file.getName();
-                    }
-                }
-            }
-        }
+//        if (folder.exists() && folder.isDirectory()) {
+//            File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".html"));
+//            if (files != null) {
+//                for (File file : files) {
+//                    if (file.isFile()) {
+//                        String documentName = file.getName();
+//                    }
+//                }
+//            }
+//        }
 
         // Parse and extract car information from both websites
         return parseCarRentalWebsite(website1Path);
@@ -71,22 +71,22 @@ public class OrbitzParser {
                 if (carName.contains("Economy Special") || carName.contains("Special")) {
                     continue;
                 }
-                System.out.println(carName);
+//                System.out.println(carName);
 //                double carPrice = Double.parseDouble(carElement.select("p.payamntp").text().replaceAll("[^0-9.]", ""));
-                double carPrice = Math.floor(Double.parseDouble(carElement.select("span.per-day-price").first().text().replaceAll("[^\\d.]", "")));
-                System.out.println(carPrice);
+                double carPrice = Double.parseDouble(carElement.select("span.total-price").first().text().replaceAll("[^\\d.]", ""));
+//                System.out.println(carPrice);
                 int passengerCapacity = Integer.parseInt(fetchInt(carElement.select("span.uitk-spacing.text-attribute.uitk-spacing-padding-inlinestart-two.uitk-spacing-padding-inlineend-three").first().text()));
-                System.out.println(passengerCapacity);
+//                System.out.println(passengerCapacity);
                 String carGroup = carElement.select("h3.uitk-heading.uitk-heading-5.uitk-spacing.uitk-spacing-padding-inline-three.uitk-layout-grid-item").text();
-                System.out.println(carGroup);
+//                System.out.println(carGroup);
                 String transmissionType = carElement.select("span.uitk-spacing.text-attribute.uitk-spacing-padding-inlinestart-two.uitk-spacing-padding-inlineend-three").text().split(" ")[1];
 
 
-                System.out.println(transmissionType);
+//                System.out.println(transmissionType);
                 int largeBag = new Random().nextInt(6) + 1;
                 int smallBag = new Random().nextInt(6) + 1;
-                System.out.println(largeBag);
-                System.out.println(smallBag);
+//                System.out.println(largeBag);
+//                System.out.println(smallBag);
 
                 // Create a CarInfo object and add it to the list
                 CarInfo carInfo = new CarInfo(carName, carPrice, passengerCapacity, carGroup, transmissionType, largeBag, smallBag, "Orbitz");

@@ -56,9 +56,9 @@ class Trie {
         suggestions.sort(Comparator.comparingInt(suggestion -> calculateEditDistance(prefix, suggestion)));
 
         // Increment search frequency for each suggestion
-        for (int i = 0; i < suggestions.size(); i++) {
-            SearchFrequency.incrementSearchFrequency(suggestions.get(i));
-        }
+//        for (int i = 0; i < suggestions.size(); i++) {
+//            SearchFrequency.incrementSearchFrequency(suggestions.get(i));
+//        }
 
         return suggestions;
     }

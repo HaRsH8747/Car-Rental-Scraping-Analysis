@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 
 public class AvisCanadaCrawl {
 
-    private static String avisUrl = "https://www.avis.ca/en/home";
-    private static Hashtable<String, String> url_Map = new Hashtable<>();
+    public static String avisUrl = "https://www.avis.ca/en/home";
 
     public static void main(String[] args) {
     }
@@ -38,6 +37,7 @@ public class AvisCanadaCrawl {
     static WebDriverWait wait;
 
     public static void initDriver() {
+        chromeOptions.addArguments("--headless");
         driver = new ChromeDriver(chromeOptions);
         wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         driver.get(avisUrl);
@@ -115,7 +115,7 @@ public class AvisCanadaCrawl {
         List<String> combinedList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : suggestionMap.entrySet()) {
             if (!entry.getValue().isEmpty()) {
-                System.out.println("\nKey: " + entry.getKey());
+                System.out.println("\n" + entry.getKey());
                 combinedList.addAll(entry.getValue());
                 for (String element : entry.getValue()) {
                     System.out.println(index + ". " + element);
@@ -126,7 +126,7 @@ public class AvisCanadaCrawl {
 
         int selectedIndex;
         do {
-            System.out.println("\nPlease select any one locations from the suggested pickup locations above: ");
+            System.out.println("\nPlease select any one locations from the suggested locations above: ");
             Scanner locationSelection = new Scanner(System.in);
             selectedIndex = locationSelection.nextInt();
         } while (selectedIndex > combinedList.size());
@@ -167,7 +167,7 @@ public class AvisCanadaCrawl {
         } while (newHeight > currentHeight);
     }
 
-    public static Hashtable<String, String> fetchCarDeals() {
+    public static void fetchCarDeals() {
         driver.findElement(By.id("res-home-select-car")).click();
 
         try {
@@ -176,7 +176,7 @@ public class AvisCanadaCrawl {
             throw new RuntimeException(e);
         }
         if (checkForWarning()) {
-            return null;
+            return;
         }
 
         checkForPopUp();
@@ -194,8 +194,7 @@ public class AvisCanadaCrawl {
 
         WebCrawler.createFile(avisUrl, content, "avis_deals", "AvisFiles/");
 
-        System.out.println("Data extracted and saved...");
-        return url_Map;
+        System.out.println("Avis deals extracted and saved in Json...");
     }
 
     private static boolean checkForWarning() {

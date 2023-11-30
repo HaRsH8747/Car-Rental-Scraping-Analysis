@@ -28,13 +28,13 @@ public class SearchFrequency {
     }
 
     // Display the most searched cars
-    public static void displayMostSearchedCars(Set<String> carList) {
+    public static List<String> displayMostSearchedCars(Set<String> carList) {
         List<String> sortedCarList = sortCarListByFrequency(searchFrequencyMap.keySet());
 
-        System.out.println("Most Searched Cars:");
-        for (String car : sortedCarList) {
-            System.out.println(car);
-
-        }
+//        System.out.println("Most Searched Cars:");
+//        for (String car : sortedCarList) {
+//            System.out.println(car);
+//        }
+        return sortedCarList;
     }
 }

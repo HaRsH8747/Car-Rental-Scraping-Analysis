@@ -1,5 +1,9 @@
 package features;
 
+import webcrawling.AvisCanadaCrawl;
+import webcrawling.BudgetCanadaCrawl;
+import webcrawling.OrbitzWebCrawl;
+
 import java.util.*;
 
 public class PageRanking {
@@ -64,10 +68,22 @@ public class PageRanking {
         // Calculate PageRank based on the document frequencies
         pageRank.calculatePageRank(documentFrequencies);
 
+        System.out.println("Ranking of website for the selected Car Model:\n");
         // Get and display ranked pages
         List<Map.Entry<String, Integer>> rankedPages = pageRank.getRankedPages();
+        int count = 1;
         for (Map.Entry<String, Integer> entry : rankedPages) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
+//            System.out.println(entry.getKey() + ": " + entry.getValue());
+            String website = entry.getKey();
+            if (entry.getKey().contains("avis")){
+                 website = AvisCanadaCrawl.avisUrl;
+            } else if (entry.getKey().contains("budget")) {
+                website = BudgetCanadaCrawl.budgetUrl;
+            } else if (entry.getKey().contains("orbitz")) {
+                website = OrbitzWebCrawl.orbitzUrl;
+            }
+            System.out.println(count+". "+website);
+            count++;
         }
     }
 }

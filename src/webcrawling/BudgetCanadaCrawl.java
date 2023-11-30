@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class BudgetCanadaCrawl {
 
-    private static String budgetUrl = "https://www.budget.ca/en/home";
+    public static String budgetUrl = "https://www.budget.ca/en/home";
 
     private static Hashtable<String, String> url_Map = new Hashtable<String, String>();
 
@@ -40,6 +40,7 @@ public class BudgetCanadaCrawl {
     static WebDriverWait wait;
 
     public static void initDriver() {
+        chromeOptions.addArguments("--headless");
         driver = new ChromeDriver(chromeOptions);
         wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         driver.get(budgetUrl);
@@ -185,7 +186,7 @@ public class BudgetCanadaCrawl {
 
         url_Map.putAll(WebCrawler.createFile(budgetUrl, content, "budget_deals", "BudgetFiles/"));
 
-        System.out.println("Data extracted and saved...");
+        System.out.println("Budget Car deals extracted and saved in Json...");
         return url_Map;
     }
 
