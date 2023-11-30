@@ -9,58 +9,59 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class WebCrawler {
-    public static List<String> findHyperLinks(List<WebElement> lnks) {
-        List<String> url_List = new ArrayList<String>();
-        for (WebElement elements : lnks) {
 
-            // check for null
-            if (elements.equals(null))
+    // Method to find hyperlinks from a list of WebElements
+    public static List<String> findHyperLinks(List<WebElement> lnks) {
+        List<String> listOfURL = new ArrayList<String>();
+        for (WebElement wElements : lnks) {
+            // checking weather element is null or not
+            if (wElements.equals(null))
                 continue;
             else {
-                // If href present add to the list
-                url_List.add(elements.getAttribute("href"));
+
+                listOfURL.add(wElements.getAttribute("href"));
             }
         }
-        // remove if any null link
-        url_List.remove(null);
-        return (url_List);
+        // remove link if it is null
+        listOfURL.remove(null);
+        return (listOfURL);
     }
 
-    public static void writeContent(String folderName, String content, String fileName, String extension) {
+    // Method to write content to a file
+    public static void contentWrite(String nameOfFolder, String content, String fileName, String extension) {
         try {
-            File folderCheck = new File(folderName);
-            File f = new File(folderName + fileName + extension);
-            if (!folderCheck.exists()) {
+            File checkFolder = new File(nameOfFolder);
+            File f = new File(nameOfFolder + fileName + extension);
+            if (!checkFolder.exists()) {
                 // Try to create the directory
-                boolean created = folderCheck.mkdirs(); // This will create the folder and any necessary but nonexistent parent directories.
+                boolean created = checkFolder.mkdirs(); // This will create the folder and any necessary but nonexistent parent directories.
 
                 if (created) {
-//					System.out.println("Folder created successfully.");
-                    FileWriter writer = new FileWriter(f, false);
-                    writer.write(content);
-                    //			System.out.println("Report Created is in Location : " + f.getAbsolutePath());
-                    writer.close();
+                    // Folder created successfully
+                    FileWriter fWriter = new FileWriter(f, false);
+                    fWriter.write(content);
+                    fWriter.close();
                 } else {
                     System.out.println("Failed to create the folder.");
                 }
             } else {
-                FileWriter writer = new FileWriter(f, false);
-                writer.write(content);
-                //			System.out.println("Report Created is in Location : " + f.getAbsolutePath());
-                writer.close();
+                // Folder already exists, write content to the file
+                FileWriter fWriter = new FileWriter(f, false);
+                fWriter.write(content);
+                fWriter.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("OOPS!!!Error in Writing file");
+            System.out.println("Error occurring in file");
         }
     }
 
-    public static Hashtable<String, String> createFile(String url, String content, String fileName,
+    // Method to create a file, write content, and store URL in a Hashtable
+    public static Hashtable<String, String> createFile(String url, String cntnt, String nameOfFile,
                                                        String folder) {
-        Hashtable<String, String> url_Map = new Hashtable<String, String>();
-        url_Map.put(fileName + ".html", url);
-        writeContent(folder, content, fileName, ".html");
-        return url_Map;
+        Hashtable<String, String> mapOfURL = new Hashtable<String, String>();
+        mapOfURL.put(nameOfFile + ".html", url);
+        contentWrite(folder, cntnt, nameOfFile, ".html");
+        return mapOfURL;
     }
-
 }

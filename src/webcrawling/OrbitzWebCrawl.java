@@ -33,15 +33,16 @@ public class OrbitzWebCrawl {
             while (wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("button.uitk-fake-input")))) {
                 wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button.uitk-button"))).click();
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
 
             }
         } catch (Exception e) {
+            System.out.println(OrbitzWebCrawl.class);
             // If the button is not present after 3 seconds, do nothing
-            System.out.println("Pop-up button not found after waiting for 1 seconds. Continuing without clicking.");
+//            System.out.println("Pop-up button not found after waiting for 1 seconds. Continuing without clicking.");
         }
     }
 
@@ -59,8 +60,9 @@ public class OrbitzWebCrawl {
 
             }
         } catch (Exception e) {
+            System.out.println(OrbitzWebCrawl.class);
             // If the button is not present after 3 seconds, do nothing
-            System.out.println("Pop-up button not found after waiting for 1 seconds. Continuing without clicking.");
+//            System.out.println("Pop-up button not found after waiting for 1 seconds. Continuing without clicking.");
         }
 
 

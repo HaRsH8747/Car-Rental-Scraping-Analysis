@@ -12,21 +12,21 @@ import java.util.Map;
 public class FrequencyCount {
 
     public static void main(String[] args) {
-        String filePath = "JsonData/filtered_car_deals.json";
+        String pathOfFile = "JsonData/filtered_car_deals.json";
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            File file = new File(filePath);
+            File file = new File(pathOfFile);
 
             // Read the JSON file into a JsonNode
             JsonNode jsonNode = objectMapper.readTree(file);
 
             // Process the JsonNode to get the frequency count
-            Map<String, Integer> frequencyMap = getFrequencyCount(filePath);
+            Map<String, Integer> mapForFrequency = getFrequencyCount(pathOfFile);
 
             // Print the frequency count
-            for (Map.Entry<String, Integer> entry : frequencyMap.entrySet()) {
-                System.out.println("Name: " + entry.getKey() + ", Frequency: " + entry.getValue());
+            for (Map.Entry<String, Integer> entryOfCar : mapForFrequency.entrySet()) {
+                System.out.println("Name: " + entryOfCar.getKey() + ", Frequency: " + entryOfCar.getValue());
             }
         } catch (IOException e) {
             System.err.println("Error reading the JSON file: " + e.getMessage());
@@ -53,8 +53,9 @@ public class FrequencyCount {
         Iterator<JsonNode> elements = jsonNode.elements();
         while (elements.hasNext()) {
             JsonNode element = elements.next();
-            String name = element.get("name").asText();
-            frequencyMap.put(name, frequencyMap.getOrDefault(name, 0) + 1);
+            String nameOfCar = element.get("name").asText();
+            //updating the according to occurrence of car appearance on site
+            frequencyMap.put(nameOfCar, frequencyMap.getOrDefault(nameOfCar, 0) + 1);
         }
 
         return frequencyMap;

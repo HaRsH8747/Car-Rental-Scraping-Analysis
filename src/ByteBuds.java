@@ -1,3 +1,5 @@
+//package advancedanalysis;
+
 import features.*;
 import htmlparser.AvisBudgetParser;
 import htmlparser.OrbitzParser;
@@ -157,8 +159,18 @@ public class ByteBuds {
                     break;
                 case 2:
                     System.out.println("The available Car Companies:");
-                    Set<String> carList = carInfoList.stream().map(ele -> ele.getName().split(" ")[0]).collect(Collectors.toSet());
+                    Set<String> carList = carInfoList.stream()
+                            .map(ele -> {
+                                String[] words = ele.getName().split(" ");
+                                return words.length >= 2 ? words[0] + " " + words[1] : ele.getName();
+                            })
+                            .collect(Collectors.toSet());
+
+
                     System.out.println(carList);
+
+                    SearchFrequency.displayMostSearchedCars(carList);
+
                     try {
                         SpellChecking.initializeDictionary("JsonData/filtered_car_deals.json");
                     } catch (IOException e) {
@@ -177,6 +189,7 @@ public class ByteBuds {
 
                     processFilter = filterByCarName(carInfoList, preferredCarName);
                     displayCarList(processFilter);
+
 
                     String s;
                     do {
@@ -293,12 +306,15 @@ public class ByteBuds {
 
         if (!suggestions.isEmpty()) {
             System.out.println("Suggestions:");
+
             for (int i = 0; i < suggestions.size(); i++) {
+
                 System.out.println((i + 1) + ". " + suggestions.get(i));
             }
 
             // Assuming you have a method to get user input, e.g., getUserSelection
             int selectedOption = getUserSelection(suggestions.size());
+
 
             // Check if the selected option is valid
             if (selectedOption >= 1 && selectedOption <= suggestions.size()) {
@@ -366,10 +382,12 @@ public class ByteBuds {
 
         // Display table rows with borders
         for (CarInfo carInfo : carInfoList) {
-            System.out.printf("| %-23s | %-38s | %-20s | %-22s | %-22s | %-24s | %-21s |\n",
+            System.out.printf("| %-23s | %-38s | $%-19.2f | %-22s | %-22s | %-24s | %-21s |\n",
                     carInfo.getCarGroup(), carInfo.getName(), carInfo.getPrice(),
-                    carInfo.getPassengerCapacity(), carInfo.getLargeBag() + carInfo.getSmallBag(), carInfo.getTransmissionType(), carInfo.getRentalCompany());
+                    carInfo.getPassengerCapacity(), carInfo.getLargeBag() + carInfo.getSmallBag(),
+                    carInfo.getTransmissionType(), carInfo.getRentalCompany());
         }
+
 
         // Display table footer with borders
         System.out.println("+-------------------------+----------------------------------------+----------------------+------------------------+------------------------+--------------------------+-----------------------+");
@@ -415,9 +433,12 @@ public class ByteBuds {
                 dropOffLocation = sameLocationResponse.equals("n") ? getDropOffLocation(scanner) : pickupLocation;
             } while (!DataValidation.validateCityName(dropOffLocation));
 
-            String finalSelectedDropOffLoc = AvisCanadaCrawl.resolveLocation(dropOffLocation, "DropLoc_value", "DropLoc_dropdown");
-            BudgetCanadaCrawl.resolveLocation(finalSelectedDropOffLoc, "DropLoc_value", "DropLoc_dropdown");
-            OrbitzWebCrawl.handleDropOffLocation(finalSelectedDropOffLoc);
+            if (sameLocationResponse.equals("n")){
+                String finalSelectedDropOffLoc = AvisCanadaCrawl.resolveLocation(dropOffLocation, "DropLoc_value", "DropLoc_dropdown");
+                BudgetCanadaCrawl.resolveLocation(finalSelectedDropOffLoc, "DropLoc_value", "DropLoc_dropdown");
+                OrbitzWebCrawl.handleDropOffLocation(finalSelectedDropOffLoc);
+            }
+
 
             // Get pickup date
             String pickupDate;
