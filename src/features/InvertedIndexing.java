@@ -2,6 +2,9 @@ package features;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.NodeVisitor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -135,7 +138,25 @@ public class InvertedIndexing {
 
         try {
             Document doc = Jsoup.parse(file, "UTF-8");
-            content.append(doc.wholeText());
+
+            // Traverse through all text nodes in the document
+            doc.traverse(new NodeVisitor() {
+                @Override
+                public void head(Node node, int depth) {
+                    // Append a space before the text content of each element (except for the first one)
+                    if (node instanceof TextNode && !content.isEmpty()) {
+                        content.append(" ");
+                    }
+                }
+
+                @Override
+                public void tail(Node node, int depth) {
+                    // No action needed for tail
+                }
+            });
+
+            // Append the whole text content to the StringBuilder
+            content.append(doc.text());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,12 +176,15 @@ public class InvertedIndexing {
                         if (file.isFile()) {
                             String documentName = file.getName();
                             String content = readHtmlFile(file);
+                            if (file.getName().toLowerCase().contains("orbitz")){
+                                System.out.println(content);
+                            }
                             indexDocument(bTree, documentName, content);
                         }
                     }
                 }
             } else {
-                System.out.println("Invalid folder path: " + folderPath);
+//                System.out.println("Invalid folder path: " + folderPath);
             }
         }
         return bTree;
@@ -171,11 +195,17 @@ public class InvertedIndexing {
         String[] tokens = content.split("\\s+");
 
         for (String token : tokens) {
+//            System.out.println(token);
+//            if (documentName.toLowerCase().contains("orbitz")){
+//                System.out.println(token);
+//            }
+//            System.out.println(token);
             // Update the B-tree
             Map<String, Integer> frequencies = bTree.search(token.toLowerCase());
             if (frequencies == null) {
                 frequencies = new HashMap<>();
             }
+//            System.out.println(frequencies);
 
             int currentFrequency = frequencies.getOrDefault(documentName, 0);
             frequencies.put(documentName, currentFrequency + 1);

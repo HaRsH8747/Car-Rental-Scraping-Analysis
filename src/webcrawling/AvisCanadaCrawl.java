@@ -1,5 +1,5 @@
 
-        package webcrawling;
+package webcrawling;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -18,6 +18,12 @@ import java.util.stream.Collectors;
 
 public class AvisCanadaCrawl {
 
+    public static void initDriver() {
+        chromeOptions.addArguments("--headless");
+        driver = new ChromeDriver(chromeOptions);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        driver.get(avisUrl);
+    }
     public static String avisUrl = "https://www.avis.ca/en/home";
 
     public static void main(String[] args) {
@@ -36,12 +42,7 @@ public class AvisCanadaCrawl {
     static WebDriver driver;
     static WebDriverWait wait;
 
-    public static void initDriver() {
-        chromeOptions.addArguments("--headless");
-        driver = new ChromeDriver(chromeOptions);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        driver.get(avisUrl);
-    }
+
 
     public static String userPickupLoc = "";
 

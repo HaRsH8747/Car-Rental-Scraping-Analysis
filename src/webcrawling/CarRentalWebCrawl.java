@@ -3,8 +3,6 @@ package webcrawling;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -13,7 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class OrbitzWebCrawl {
+public class CarRentalWebCrawl {
     public static String orbitzUrl = "https://www.carrentals.com/";
 
     static ChromeOptions chromeOptions = new ChromeOptions();
@@ -23,14 +21,11 @@ public class OrbitzWebCrawl {
     static WebDriverWait wait;
 
     public static void initDriver() {
-        System.setProperty("webdriver.edge.driver", "/Users/keyur/eclipse-workspace/Car-Rental-Scraping-Analysis/driver/msedgedriver");
 
-//        System.setProperty("webdriver.chrome.driver", "H:\\chromedriver.exe");
-//        edgeOptions.addArguments("--headless");
 //        chromeOptions.addArguments("--headless");
         driver = new ChromeDriver(chromeOptions);
 //        driver = new EdgeDriver(edgeOptions);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         driver.get(orbitzUrl);
         driver.navigate().refresh();
 //        try {
@@ -44,7 +39,7 @@ public class OrbitzWebCrawl {
 //
 //            }
 //        } catch (Exception e) {
-////            System.out.println(OrbitzWebCrawl.class);
+////            System.out.println(CarRentalWebCrawl.class);
 //            // If the button is not present after 3 seconds, do nothing
 ////            System.out.println("Pop-up button not found after waiting for 1 seconds. Continuing without clicking.");
 //        }
@@ -64,7 +59,7 @@ public class OrbitzWebCrawl {
 
             }
         } catch (Exception e) {
-//            System.out.println(OrbitzWebCrawl.class);
+//            System.out.println(CarRentalWebCrawl.class);
             // If the button is not present after 3 seconds, do nothing
 //            System.out.println("Pop-up button not found after waiting for 1 seconds. Continuing without clicking.");
         }
@@ -227,7 +222,7 @@ public class OrbitzWebCrawl {
 //        wait2.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("body")));
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div[data-testid='car-offer-card']")));
-        WebCrawler.createFile(orbitzUrl, driver.getPageSource(), "orbitz_deals", "OrbitzFiles/");
+        WebCrawler.createFile(orbitzUrl, driver.getPageSource(), "orbitz_deals", "CarRentalFiles/");
     }
 
     public static void handlePickUpLocation(String pickUpLoc) {
@@ -328,7 +323,7 @@ public class OrbitzWebCrawl {
 //        WebElement inputField = driver.findElement(By.xpath("//*[@id=\"location-field-loc2\"]"));
 //        inputField.sendKeys(dropOffLoc);
 //        driver.navigate().refresh();
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"Rental-cars-transportation\"]/div[1]/div[2]/div/div/div/div/div[2]/div[1]/button"))).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"wizard-car-pwa-1\"]/div[1]/div[2]/div/div/div/div/div[2]/div[1]/button"))).click();
         WebElement inputField1 = driver.findElement(By.xpath("//*[@id=\"location-field-loc2\"]"));
         inputField1.sendKeys(dropOffLoc);
 
@@ -358,7 +353,7 @@ public class OrbitzWebCrawl {
         }
         Scanner scanner = new Scanner(System.in);
 //        System.out.println("Select your location: ");
-        String userInput = "1";
+        String userInput = "0";
         List<WebElement> buttons = driver.findElements(By.cssSelector("ul[data-stid='location-field-loc2-results'] button[data-stid='location-field-loc2-result-item-button']"));
 
         int indexToClick = Integer.parseInt(userInput); // Change the index based on your requirement (0-based index)

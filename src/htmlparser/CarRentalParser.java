@@ -12,10 +12,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class OrbitzParser {
+public class CarRentalParser {
 
-    public static List<CarInfo> fetchAllOrbitzDeals(){
-        String website1Path = "OrbitzFiles/orbitz_deals.html";
+    public static List<CarInfo> fetchAllCarRentalDeals(){
+        String website1Path = "CarRentalFiles/orbitz_deals.html";
         File folder = new File(website1Path);
 //        if (folder.exists() && folder.isDirectory()) {
 //            File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".html"));
@@ -34,7 +34,7 @@ public class OrbitzParser {
 
     public static void main(String[] args) {
         // Replace these paths with the actual paths of your car rental HTML files
-        String website1Path = "OrbitzFiles";
+        String website1Path = "CarRentalFiles";
         File folder = new File(website1Path);
         if (folder.exists() && folder.isDirectory()) {
             File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".html"));
@@ -89,7 +89,7 @@ public class OrbitzParser {
 //                System.out.println(smallBag);
 
                 // Create a CarInfo object and add it to the list
-                CarInfo carInfo = new CarInfo(carName, carPrice, passengerCapacity, carGroup, transmissionType, largeBag, smallBag, "Orbitz");
+                CarInfo carInfo = new CarInfo(carName, carPrice, passengerCapacity, carGroup, transmissionType, largeBag, smallBag, "CarRental");
                 carInfoList.add(carInfo);
             }
 

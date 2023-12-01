@@ -3,11 +3,11 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import features.*;
 import htmlparser.AvisBudgetParser;
-import htmlparser.OrbitzParser;
+import htmlparser.CarRentalParser;
 import model.CarInfo;
 import webcrawling.AvisCanadaCrawl;
 import webcrawling.BudgetCanadaCrawl;
-import webcrawling.OrbitzWebCrawl;
+import webcrawling.CarRentalWebCrawl;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,8 +100,8 @@ public class ByteBuds {
         return false; // No HTML files found in the "AvisFiles" folder
     }
 
-    private static boolean filesExistInOrbitz() {
-        File avisFolder = new File("OrbitzFiles");
+    private static boolean filesExistInCarRental() {
+        File avisFolder = new File("CarRentalFiles");
 
         if (avisFolder.exists() && avisFolder.isDirectory()) {
             File[] files = avisFolder.listFiles();
@@ -119,10 +119,10 @@ public class ByteBuds {
     }
 
     private static boolean checkHtmlFiles() {
-        // Check if there are HTML files in the specified folders (AvisFiles, BudgetFiles, OrbitzFiles)
+        // Check if there are HTML files in the specified folders (AvisFiles, BudgetFiles, CarRentalFiles)
         // You can implement the logic to check for files and return true if files are present, false otherwise.
         // For example:
-        if (filesExistInAvis() || filesExistInBudget() || filesExistInOrbitz()) {
+        if (filesExistInAvis() || filesExistInBudget() || filesExistInCarRental()) {
             return true;
         } else {
             return false;
@@ -474,7 +474,7 @@ public class ByteBuds {
     private static List<CarInfo> performParsing() {
         List<CarInfo> combined = new ArrayList<>();
         combined.addAll(AvisBudgetParser.parseFiles());
-        combined.addAll(OrbitzParser.fetchAllOrbitzDeals());
+        combined.addAll(CarRentalParser.fetchAllCarRentalDeals());
         saveCarInfoToJson(combined, "filtered_car_deals");
 
         return combined;
@@ -483,7 +483,7 @@ public class ByteBuds {
     private static void performCrawling() {
         AvisCanadaCrawl.initDriver();
         BudgetCanadaCrawl.initDriver();
-        OrbitzWebCrawl.initDriver();
+        CarRentalWebCrawl.initDriver();
 
         Scanner scanner = new Scanner(System.in);
         String response;
@@ -504,8 +504,8 @@ public class ByteBuds {
 
             String finalSelectedPickupLoc = AvisCanadaCrawl.resolveLocation(pickupLocation, "PicLoc_value", "PicLoc_dropdown");
             BudgetCanadaCrawl.resolveLocation(finalSelectedPickupLoc.split(",")[0], "PicLoc_value", "PicLoc_dropdown");
-//            OrbitzWebCrawl.handlePickUpLocation(finalSelectedPickupLoc);
-            OrbitzWebCrawl.handlePickUpLocation(finalSelectedPickupLoc.split(",")[0]);
+//            CarRentalWebCrawl.handlePickUpLocation(finalSelectedPickupLoc);
+            CarRentalWebCrawl.handlePickUpLocation(finalSelectedPickupLoc.split(",")[0]);
 //            BudgetCanadaCrawl.resolveLocation(pickupLocation,"PicLoc_value", "PicLoc_dropdown");
 
 //             Get drop-off location if locations are different
@@ -517,7 +517,7 @@ public class ByteBuds {
             if (sameLocationResponse.equals("n")){
                 String finalSelectedDropOffLoc = AvisCanadaCrawl.resolveLocation(dropOffLocation, "DropLoc_value", "DropLoc_dropdown");
                 BudgetCanadaCrawl.resolveLocation(finalSelectedDropOffLoc, "DropLoc_value", "DropLoc_dropdown");
-                OrbitzWebCrawl.handleDropOffLocation(finalSelectedDropOffLoc);
+                CarRentalWebCrawl.handleDropOffLocation(finalSelectedDropOffLoc);
             }
 
 
@@ -535,7 +535,7 @@ public class ByteBuds {
                 returnDate = scanner.nextLine();
             } while (!DataValidation.validateDate(returnDate));
 
-            OrbitzWebCrawl.resolveDate(pickupDate, returnDate);
+            CarRentalWebCrawl.resolveDate(pickupDate, returnDate);
 
             pickupDate = convertDateFormat(pickupDate);
             returnDate = convertDateFormat(returnDate);
@@ -558,12 +558,17 @@ public class ByteBuds {
                 returnTime = scanner.nextLine();
             } while (!DataValidation.validateTime(returnTime));
 
+            try {
+                AvisCanadaCrawl.resolveTime(pickupTime, returnTime);
+                BudgetCanadaCrawl.resolveTime(pickupTime, returnTime);
+                CarRentalWebCrawl.resolveTime(pickupTime, returnTime);
+                AvisCanadaCrawl.fetchCarDeals();
+                BudgetCanadaCrawl.fetchCarDeals();
+            }catch (Exception ex){
 
-            AvisCanadaCrawl.resolveTime(pickupTime, returnTime);
-            BudgetCanadaCrawl.resolveTime(pickupTime, returnTime);
-            OrbitzWebCrawl.resolveTime(pickupTime, returnTime);
-            AvisCanadaCrawl.fetchCarDeals();
-            BudgetCanadaCrawl.fetchCarDeals();
+            }
+
+
 
             // Perform web scraping actions (replace with your actual scraping logic)
 //            AvisCanadaWebCrawler avisCanadaWebCrawler = new AvisCanadaWebCrawler(driver,wait);
@@ -578,13 +583,13 @@ public class ByteBuds {
             if (response.equalsIgnoreCase("yes")) {
                 AvisCanadaCrawl.resetDriver();
                 BudgetCanadaCrawl.resetDriver();
-                OrbitzWebCrawl.resetDriver();
+                CarRentalWebCrawl.resetDriver();
             }
         } while (response.equalsIgnoreCase("yes"));
 
         AvisCanadaCrawl.closeDriver();
         BudgetCanadaCrawl.closeDriver();
-        OrbitzWebCrawl.closeDriver();
+        CarRentalWebCrawl.closeDriver();
     }
 
     public static String convertDateFormat(String inputDate) {

@@ -19,7 +19,7 @@ public class AvisBudgetParser {
 
         List<CarInfo> combinedCarInfoList = new ArrayList<>();
 
-        String[] folderPaths = {"AvisFiles/", "BudgetFiles/", "OrbitzFiles/"};
+        String[] folderPaths = {"AvisFiles/", "BudgetFiles/", "CarRentalFiles/"};
 
         for (String folderPath : folderPaths) {
             // Create a File object for the folder
@@ -64,7 +64,7 @@ public class AvisBudgetParser {
                     for (File file : files) {
 //                        System.out.println(file.getName());
                         combinedCarInfoList.addAll(parseCarRentalWebsite(file.getAbsolutePath()));
-//                        combinedCarInfoList.addAll(OrbitzParser.fetchAllOrbitzDeals());
+//                        combinedCarInfoList.addAll(CarRentalParser.fetchAllCarRentalDeals());
                     }
                 } else {
                     System.out.println("The folder is empty.");

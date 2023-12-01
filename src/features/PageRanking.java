@@ -2,7 +2,7 @@ package features;
 
 import webcrawling.AvisCanadaCrawl;
 import webcrawling.BudgetCanadaCrawl;
-import webcrawling.OrbitzWebCrawl;
+import webcrawling.CarRentalWebCrawl;
 
 import java.util.*;
 
@@ -58,9 +58,17 @@ public class PageRanking {
     }
 
     public static void showRanking(String keyword){
-        BTree bTree = InvertedIndexing.indexDocumentsInFolder(new String[]{"AvisFiles/","BudgetFiles/","OrbitzFiles/"});
+        BTree bTree = InvertedIndexing.indexDocumentsInFolder(new String[]{"AvisFiles/","BudgetFiles/","CarRentalFiles/"});
 
         Map<String, Integer> documentFrequencies = bTree.search(keyword);
+
+        if (!documentFrequencies.containsKey("avis_deals.html")){
+            documentFrequencies.put("avis_deals.html",0);
+        }if (!documentFrequencies.containsKey("budget_deals.html")){
+            documentFrequencies.put("budget_deals.html",0);
+        }if (!documentFrequencies.containsKey("orbitz_deals.html")){
+            documentFrequencies.put("orbitz_deals.html",0);
+        }
 
         // Create a PageRank object
         PageRanking pageRank = new PageRanking();
@@ -76,11 +84,11 @@ public class PageRanking {
 //            System.out.println(entry.getKey() + ": " + entry.getValue());
             String website = entry.getKey();
             if (entry.getKey().contains("avis")){
-                 website = AvisCanadaCrawl.avisUrl;
+                website = AvisCanadaCrawl.avisUrl;
             } else if (entry.getKey().contains("budget")) {
                 website = BudgetCanadaCrawl.budgetUrl;
             } else if (entry.getKey().contains("orbitz")) {
-                website = OrbitzWebCrawl.orbitzUrl;
+                website = CarRentalWebCrawl.orbitzUrl;
             }
             System.out.println(count+". "+website);
             count++;
